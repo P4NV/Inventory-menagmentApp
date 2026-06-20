@@ -1,9 +1,15 @@
 import {NavLink} from "react-router-dom";
+import '../App.css';
 
 export default function Sidebar() {
     return (
         <>
-            <aside className="sidebar">
+            <aside className="w-72 border-r-2 border-white p-4">
+                <div className="">
+                    <h1>
+                        Inventory management
+                    </h1>
+                </div>
                 <nav>
                     <ul>
                         <li>
