@@ -4,7 +4,7 @@ import App from "../App";
 
 import Dashboard from "../pages/Dashboard";
 import Users from "../pages/Users";
-import Projects from "../pages/Projects";
+import Products from "../pages/Products.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "projects",
-                element: <Projects />,
+                element: <Products />,
             },
         ],
     },
