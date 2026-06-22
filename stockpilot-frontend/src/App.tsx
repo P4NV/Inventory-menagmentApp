@@ -12,7 +12,7 @@ function App() {
                     <Topbar />
                 </header>
 
-                <main className="flex-1 p-6">
+                <main className="flex-1 max-h-6/7 overflow-y-scroll">
                     <Outlet />
                 </main>
             </div>
