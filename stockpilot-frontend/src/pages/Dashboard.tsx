@@ -1,133 +1,158 @@
 import { useEffect, useState } from 'react'
-import {
-    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, Legend
-} from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,} from 'recharts'
 
-const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+const COLORS = ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6']
 
-interface Stats {
-    totalProducts: number
-    lowStockCount: number
-    totalValue: number
-    stockByCategory: Record<string, number>
-    countByCategory: Record<string, number>
-    lowStockItems: { name: string; sku: string; stockQty: number; reorderLevel: number }[]
-}
+function StatCard({ label, value, sub, subColor = '#6b7280', accent = '#111827' }: any) {
+    // const bgColor = accent === '#10b981' ? 'bg-emerald-100' :
+    //                accent === '#f59e0b' ? 'bg-amber-100' :
+    //                accent === '#ef4444' ? 'bg-red-100' :
+    //                accent === '#6366f1' ? 'bg-indigo-100' : 'bg-gray-100';
 
-function StatCard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color: string }) {
+    const textColor = accent === '#10b981' ? 'text-emerald-800' :
+                     accent === '#f59e0b' ? 'text-amber-800' :
+                     accent === '#ef4444' ? 'text-red-800' :
+                     accent === '#6366f1' ? 'text-indigo-800' : 'text-gray-800';
+
+    const subTextColor = subColor === '#f59e0b' ? 'text-amber-500' :
+                        subColor === '#ef4444' ? 'text-red-500' :
+                        subColor === '#10b981' ? 'text-emerald-500' :
+                        subColor === '#6366f1' ? 'text-indigo-500' : 'text-gray-500';
+
     return (
-        <div style={{
-            background: 'white', borderRadius: 12, padding: '20px 24px',
-            border: '1px solid #e5e7eb', flex: 1, minWidth: 160
-        }}>
-            <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 6 }}>{label}</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color }}>{value}</div>
-            {sub && <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>{sub}</div>}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 flex-1">
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">{label}</div>
+            <div className={`text-2xl font-bold ${textColor} leading-tight`}>{value}</div>
+            {sub && <div className={`text-sm ${subTextColor} mt-1`}>{sub}</div>}
         </div>
     )
 }
 
 export default function Dashboard() {
-    const [stats, setStats] = useState<Stats | null>(null)
+    const [stats, setStats] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         fetch('/api/dashboard/stats')
             .then(r => r.json())
-            .then(data => { setStats(data); setLoading(false) })
+            .then(d => { setStats(d); setLoading(false) })
             .catch(() => setLoading(false))
     }, [])
 
-    if (loading) return <div style={{ padding: 40, color: '#9ca3af' }}>Loading dashboard…</div>
-    if (!stats) return <div style={{ padding: 40, color: '#ef4444' }}>Failed to load dashboard.</div>
+    if (loading) return <div className="p-12 text-gray-500 text-center">Loading…</div>
+    if (!stats) return <div className="p-12 text-red-500 text-center">Failed to load</div>
 
-    const barData = Object.entries(stats.stockByCategory).map(([name, value]) => ({ name, value }))
-    const pieData = Object.entries(stats.countByCategory).map(([name, value]) => ({ name, value }))
+    const barData = Object.entries(stats.stockByCategory || {}).map(([name, value]) => ({ name: name.split(' ')[0], value }))
+    const pieData = Object.entries(stats.countByCategory || {}).map(([name, value]) => ({ name, value }))
+    const totalValue = Number(stats.totalValue || 0)
 
     return (
-        <div style={{ padding: '32px 40px', fontFamily: 'inherit' }}>
-            <h1 style={{ fontSize: 24, fontWeight: 600, margin: '0 0 24px' }}>Dashboard</h1>
-
-            {/* Stat Cards */}
-            <div style={{ display: 'flex', gap: 16, marginBottom: 32, flexWrap: 'wrap' }}>
-                <StatCard label="Total Products" value={stats.totalProducts} color="#111827" />
-                <StatCard
-                    label="Low Stock Items"
-                    value={stats.lowStockCount}
-                    sub="Need reordering"
-                    color={stats.lowStockCount > 0 ? '#ef4444' : '#10b981'}
-                />
-                <StatCard
-                    label="Total Inventory Value"
-                    value={`€${Number(stats.totalValue).toLocaleString('en-IE', { minimumFractionDigits: 2 })}`}
-                    color="#6366f1"
-                />
-                <StatCard label="Categories" value={Object.keys(stats.countByCategory).length} color="#f59e0b" />
+        <div className="p-8">
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">Welcome back</h1>
+                <p className="text-sm text-gray-500">Here's what's happening across your inventory today.</p>
             </div>
 
-            {/* Charts row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
+            {/* Stat Cards */}
+            <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard label="Total SKUs" value={stats.totalProducts} sub="+0% this month" />
+                <StatCard
+                    label="Low Stock"
+                    value={stats.lowStockCount}
+                    sub="Requires action"
+                    accent={stats.lowStockCount > 0 ? '#f59e0b' : '#10b981'}
+                    subColor={stats.lowStockCount > 0 ? '#f59e0b' : '#10b981'}
+                />
+                <StatCard
+                    label="Out of Stock"
+                    value={stats.lowStockItems?.filter((i: any) => i.stockQty === 0).length || 0}
+                    sub="Urgent"
+                    accent="#ef4444"
+                    subColor="#ef4444"
+                />
+                <StatCard
+                    label="Inventory Value"
+                    value={`€${(totalValue / 1000).toFixed(1)}k`}
+                    sub="Net assets"
+                    accent="#6366f1"
+                />
+            </div>
 
-                {/* Bar chart */}
-                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb', padding: '20px 24px' }}>
-                    <div style={{ fontWeight: 600, marginBottom: 16 }}>Stock Quantity by Category</div>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <BarChart data={barData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                            <YAxis tick={{ fontSize: 12 }} />
-                            <Tooltip />
-                            <Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            {/* Charts + Low Stock */}
+            <div className="grid gap-6 mb-8">
+                {/* Low stock table - full width on small screens */}
+                <div className="col-span-1 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <div>
+                            <div className="font-semibold text-gray-800">Needs attention</div>
+                            <div className="text-sm text-gray-500 mt-1">Items below reorder point or out of stock</div>
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">On Hand</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reorder At</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {(stats.lowStockItems || []).slice(0, 5).map((item: any, i: number) => (
+                                    <tr key={i} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 font-mono text-sm font-medium text-indigo-600">{item.sku}</td>
+                                        <td className="px-6 py-4 font-medium text-gray-800">{item.name}</td>
+                                        <td className={`px-6 py-4 text-sm font-medium ${item.stockQty === 0 ? 'text-red-600' : 'text-amber-600'}`}>{item.stockQty}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-500">{item.reorderLevel}</td>
+                                        <td className="px-6 py-4">
+                                            {item.stockQty === 0 ? (
+                                                <span className="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Out of Stock</span>
+                                            ) : (
+                                                <span className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">Low Stock</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {!stats.lowStockItems || stats.lowStockItems.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                                            All products are well stocked ✓
+                                        </td>
+                                    </tr>
+                                ) : null}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Charts row - side by side on medium and up */}
+                <div className="col-span-1 bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="font-semibold text-gray-800 mb-4">Stock by Category</div>
+                    <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={barData} margin={{ left: -20 }}>
+                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                            <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }} />
+                            <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
 
-                {/* Pie chart */}
-                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb', padding: '20px 24px' }}>
-                    <div style={{ fontWeight: 600, marginBottom: 16 }}>Products by Category</div>
-                    <ResponsiveContainer width="100%" height={220}>
+                <div className="col-span-1 bg-white rounded-lg border border-gray-200 p-6">
+                    <div className="font-semibold text-gray-800 mb-4">Products by Category</div>
+                    <ResponsiveContainer width="100%" height={200}>
                         <PieChart>
-                            <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                            <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${String(name ?? '').split(' ')[0]} ${((percent ?? 0) * 100).toFixed(0)}%`} labelLine={false}>
                                 {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                             </Pie>
-                            <Legend />
-                            <Tooltip />
+                            <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13 }} />
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
             </div>
-
-            {/* Low stock table */}
-            {stats.lowStockItems.length > 0 && (
-                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
-                    <div style={{ padding: '16px 24px', borderBottom: '1px solid #f3f4f6', fontWeight: 600, color: '#ef4444' }}>
-                        ⚠ Low Stock Alerts ({stats.lowStockItems.length})
-                    </div>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-                        <thead>
-                        <tr style={{ background: '#f9fafb' }}>
-                            {['SKU', 'Product', 'In Stock', 'Reorder At'].map(h => (
-                                <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 500, color: '#6b7280', fontSize: 13 }}>{h}</th>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {stats.lowStockItems.map((item, i) => (
-                            <tr key={i} style={{ borderTop: '1px solid #f3f4f6' }}>
-                                <td style={{ padding: '12px 16px', fontFamily: 'monospace', fontSize: 13, color: '#6b7280' }}>{item.sku}</td>
-                                <td style={{ padding: '12px 16px', fontWeight: 500 }}>{item.name}</td>
-                                <td style={{ padding: '12px 16px' }}>
-                    <span style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 10px', borderRadius: 999, fontSize: 12, fontWeight: 500 }}>
-                      {item.stockQty}
-                    </span>
-                                </td>
-                                <td style={{ padding: '12px 16px', color: '#9ca3af' }}>{item.reorderLevel}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
         </div>
     )
 }

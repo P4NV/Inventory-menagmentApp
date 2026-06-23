@@ -1,0 +1,8 @@
+export default function Suppliers() {
+    return (
+        <div className="p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Suppliers</h1>
+            <p className="text-gray-600">Supplier management page coming soon.</p>
+        </div>
+    )
+}

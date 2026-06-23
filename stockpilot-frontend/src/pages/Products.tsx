@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import '../App.css'
 
 interface Product {
     id: number
@@ -44,13 +43,9 @@ const SUPPLIER_IDS: Record<string, string> = {
 }
 
 function StockBadge({ qty, needsReorder }: { qty: number; needsReorder: boolean }) {
-    if (qty === 0) return <span style={badge('#fee2e2', '#991b1b')}>Out of stock</span>
-    if (needsReorder) return <span style={badge('#fef3c7', '#92400e')}>Low — {qty} left</span>
-    return <span style={badge('#dcfce7', '#166534')}>{qty} in stock</span>
-}
-
-function badge(bg: string, color: string): React.CSSProperties {
-    return { background: bg, color, fontSize: 12, fontWeight: 500, padding: '3px 10px', borderRadius: 999, whiteSpace: 'nowrap' }
+    if (qty === 0) return <span className="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Out of stock</span>
+    if (needsReorder) return <span className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">Low — {qty} left</span>
+    return <span className="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">{qty} in stock</span>
 }
 
 function Modal({ title, onClose, onSave, form, setForm, saving }: {
@@ -62,58 +57,59 @@ function Modal({ title, onClose, onSave, form, setForm, saving }: {
     saving: boolean
 }) {
     const field = (label: string, key: keyof FormData, type = 'text') => (
-        <div style={{ marginBottom: 14 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 4 }}>{label}</label>
+        <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
             <input
                 type={type}
                 value={form[key]}
                 onChange={e => setForm({ ...form, [key]: e.target.value })}
-                style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 14, boxSizing: 'border-box' }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
         </div>
     )
 
     return (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-            <div style={{ background: 'white', borderRadius: 16, padding: 28, width: 480, maxHeight: '90vh', overflowY: 'auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                    <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>{title}</h2>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#9ca3af' }}>×</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+            <div className="bg-white rounded-lg p-6 w-96 max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-lg font-medium text-gray-900">{title}</h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-500 hover:text-gray-600">&times;</button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+                <div className="grid gap-4 md:grid-cols-2">
                     <div>{field('SKU', 'sku')}</div>
                     <div>{field('Name', 'name')}</div>
                 </div>
                 {field('Description', 'description')}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0 16px' }}>
+                <div className="grid gap-4 md:grid-cols-3">
                     <div>{field('Price (€)', 'unitPrice', 'number')}</div>
                     <div>{field('Stock Qty', 'stockQty', 'number')}</div>
                     <div>{field('Reorder At', 'reorderLevel', 'number')}</div>
                 </div>
 
-                <div style={{ marginBottom: 14 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 4 }}>Category</label>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                     <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })}
-                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 14 }}>
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         {Object.entries(CATEGORY_IDS).map(([name, id]) => <option key={id} value={id}>{name}</option>)}
                     </select>
                 </div>
 
-                <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 4 }}>Supplier</label>
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
                     <select value={form.supplierId} onChange={e => setForm({ ...form, supplierId: e.target.value })}
-                            style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 14 }}>
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         {Object.entries(SUPPLIER_IDS).map(([name, id]) => <option key={id} value={id}>{name}</option>)}
                     </select>
                 </div>
 
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                    <button onClick={onClose} style={{ padding: '9px 18px', border: '1px solid #d1d5db', borderRadius: 8, background: 'white', cursor: 'pointer', fontSize: 14 }}>
+                <div className="flex justify-end space-x-3">
+                    <button onClick={onClose}
+                            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Cancel
                     </button>
                     <button onClick={onSave} disabled={saving}
-                            style={{ padding: '9px 18px', background: '#111827', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
+                            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
                         {saving ? 'Saving…' : 'Save'}
                     </button>
                 </div>
@@ -185,84 +181,73 @@ export default function Products() {
     const lowStockCount = products.filter(p => p.needsReorder).length
 
     return (
-        <div style={{ padding: '32px 40px', fontFamily: 'inherit' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        <div className="p-8">
+            <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 style={{ fontSize: 24, fontWeight: 600, margin: 0 }}>Products</h1>
-                    <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Products</h1>
+                    <p className="text-sm text-gray-500">
                         {products.length} products total
-                        {lowStockCount > 0 && <span style={{ marginLeft: 12, color: '#b45309', fontWeight: 500 }}>⚠ {lowStockCount} need reordering</span>}
+                        {lowStockCount > 0 && <span className="ml-2 text-amber-600 font-medium">⚠ {lowStockCount} need reordering</span>}
                     </p>
                 </div>
-                <button onClick={openAdd} style={{
-                    background: '#111827', color: 'white', border: 'none', borderRadius: 8,
-                    padding: '9px 18px', fontSize: 14, fontWeight: 500, cursor: 'pointer'
-                }}>
+                <button onClick={openAdd} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     + Add Product
                 </button>
             </div>
 
-            <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+            <div className="flex flex-wrap items-start mb-4 gap-4">
                 <input type="text" placeholder="Search by name or SKU…" value={search}
                        onChange={e => setSearch(e.target.value)}
-                       style={{ padding: '8px 14px', border: '1px solid #d1d5db', borderRadius: 8, fontSize: 14, width: 260, outline: 'none' }} />
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                       className="px-3 py-2 border border-gray-300 rounded-md shadow-sm w-64 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" />
+                <div className="flex flex-wrap gap-2">
                     {CATEGORIES.map(cat => (
-                        <button key={cat} onClick={() => setCategory(cat)} style={{
-                            padding: '7px 14px', borderRadius: 8, border: '1px solid',
-                            fontSize: 13, cursor: 'pointer', fontWeight: category === cat ? 600 : 400,
-                            background: category === cat ? '#111827' : 'white',
-                            borderColor: category === cat ? '#111827' : '#d1d5db',
-                            color: category === cat ? 'white' : '#374151'
-                        }}>{cat}</button>
+                        <button key={cat} onClick={() => setCategory(cat)} className={`px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${category === cat ? 'bg-indigo-600 text-white' : 'text-gray-700 bg-white'}`}>
+                            {cat}
+                        </button>
                     ))}
                 </div>
             </div>
 
-            {loading && <div style={{ textAlign: 'center', padding: 60, color: '#9ca3af' }}>Loading…</div>}
+            {loading && <div className="text-center py-12 text-gray-500">Loading…</div>}
 
             {!loading && (
-                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-                        <thead>
-                        <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                            {['SKU', 'Name', 'Category', 'Supplier', 'Price', 'Stock', 'Reorder at', ''].map(h => (
-                                <th key={h} style={{ padding: '11px 16px', textAlign: 'left', fontWeight: 500, color: '#6b7280', fontSize: 13 }}>{h}</th>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {filtered.length === 0 ? (
-                            <tr><td colSpan={8} style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>No products found</td></tr>
-                        ) : filtered.map((p, i) => (
-                            <tr key={p.id}
-                                style={{ borderBottom: i < filtered.length - 1 ? '1px solid #f3f4f6' : 'none' }}
-                                onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'white')}>
-                                <td style={{ padding: '12px 16px', color: '#6b7280', fontFamily: 'monospace', fontSize: 13 }}>{p.sku}</td>
-                                <td style={{ padding: '12px 16px', fontWeight: 500 }}>
-                                    {p.name}
-                                    {p.description && <div style={{ fontSize: 12, color: '#9ca3af', fontWeight: 400, marginTop: 2 }}>{p.description}</div>}
-                                </td>
-                                <td style={{ padding: '12px 16px', color: '#374151' }}>{p.category ?? '—'}</td>
-                                <td style={{ padding: '12px 16px', color: '#374151' }}>{p.supplier ?? '—'}</td>
-                                <td style={{ padding: '12px 16px', fontWeight: 500 }}>€{p.unitPrice.toFixed(2)}</td>
-                                <td style={{ padding: '12px 16px' }}><StockBadge qty={p.stockQty} needsReorder={p.needsReorder} /></td>
-                                <td style={{ padding: '12px 16px', color: '#9ca3af' }}>{p.reorderLevel}</td>
-                                <td style={{ padding: '12px 16px' }}>
-                                    <div style={{ display: 'flex', gap: 8 }}>
-                                        <button onClick={() => openEdit(p)} style={{
-                                            padding: '5px 12px', fontSize: 12, border: '1px solid #d1d5db',
-                                            borderRadius: 6, background: 'white', cursor: 'pointer', color: '#374151'
-                                        }}>Edit</button>
-                                        <button onClick={() => setDeleteId(p.id)} style={{
-                                            padding: '5px 12px', fontSize: 12, border: '1px solid #fca5a5',
-                                            borderRadius: 6, background: 'white', cursor: 'pointer', color: '#ef4444'
-                                        }}>Delete</button>
-                                    </div>
-                                </td>
+                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reorder at</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
-                        ))}
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 bg-white">
+                            {filtered.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">No products found</td>
+                                </tr>
+                            ) : filtered.map((p) => (
+                                <tr key={p.id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 font-mono text-sm font-medium text-indigo-600">{p.sku}</td>
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-800">
+                                        {p.name}
+                                        {p.description && <div className="text-sm text-gray-500 mt-1">{p.description}</div>}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{p.category ?? '—'}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{p.supplier ?? '—'}</td>
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-800">€{p.unitPrice.toFixed(2)}</td>
+                                    <td className="px-6 py-4"><StockBadge qty={p.stockQty} needsReorder={p.needsReorder} /></td>
+                                    <td className="px-6 py-4 text-sm text-gray-500">{p.reorderLevel}</td>
+                                    <td className="px-6 py-4 text-sm font-medium space-x-2">
+                                        <button onClick={() => openEdit(p)} className="px-3 py-1 text-xs border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Edit</button>
+                                        <button onClick={() => setDeleteId(p.id)} className="px-3 py-1 text-xs border border-red-300 text-red-600 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -280,13 +265,17 @@ export default function Products() {
             )}
 
             {deleteId && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-                    <div style={{ background: 'white', borderRadius: 16, padding: 28, width: 360 }}>
-                        <h2 style={{ margin: '0 0 10px', fontSize: 18 }}>Delete product?</h2>
-                        <p style={{ color: '#6b7280', fontSize: 14, margin: '0 0 20px' }}>This action cannot be undone.</p>
-                        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                            <button onClick={() => setDeleteId(null)} style={{ padding: '9px 18px', border: '1px solid #d1d5db', borderRadius: 8, background: 'white', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={confirmDelete} style={{ padding: '9px 18px', background: '#ef4444', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+                    <div className="bg-white rounded-lg p-6 w-96">
+                        <h2 className="text-lg font-medium text-gray-900 mb-4">Delete product?</h2>
+                        <p className="text-gray-600 mb-6">This action cannot be undone.</p>
+                        <div className="flex justify-end space-x-3">
+                            <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Cancel
+                            </button>
+                            <button onClick={confirmDelete} className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                Delete
+                            </button>
                         </div>
                     </div>
                 </div>

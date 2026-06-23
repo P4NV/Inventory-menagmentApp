@@ -1,6 +1,7 @@
 package com.stockpilot.stockpilot_backend.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "suppliers")
@@ -17,16 +18,17 @@ public class Supplier {
     private String contactEmail;
 
     private String phone;
+    private String country;
+    private BigDecimal rating;
+
+    @Column(name = "lead_time_days")
+    private Integer leadTimeDays;
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
     public String getContactEmail() { return contactEmail; }
-    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
-
     public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public String getCountry() { return country; }
+    public BigDecimal getRating() { return rating; }
+    public Integer getLeadTimeDays() { return leadTimeDays; }
 }
