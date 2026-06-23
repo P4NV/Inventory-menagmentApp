@@ -24,26 +24,16 @@ CREATE TABLE IF NOT EXISTS categories
 
 CREATE TABLE IF NOT EXISTS suppliers
 (
-    id
-    BIGSERIAL
-    PRIMARY
-    KEY,
-    name
-    VARCHAR
-(
-    150
-) NOT NULL,
-    contact_email VARCHAR
-(
-    200
-),
-    phone VARCHAR
-(
-    30
-),
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    contact_email VARCHAR(200),
+    phone VARCHAR(30),
+    country VARCHAR(100),
+    rating NUMERIC(3,2),
+    lead_time_days INTEGER,
     created_at TIMESTAMPTZ DEFAULT NOW
-(
-)
+    (
+    )
     );
 
 CREATE TABLE IF NOT EXISTS products
@@ -190,4 +180,36 @@ SELECT p.id,
        p.updated_at
 FROM products p
          LEFT JOIN categories c ON c.id = p.category_id
-         LEFT JOIN suppliers s ON s.id = p.supplier_id;
+         LEFT JOIN suppliers s ON s.id = p.supplier_id;-- Warehouses table
+CREATE TABLE IF NOT EXISTS warehouses (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(200),
+    manager VARCHAR(100),
+    capacity INTEGER NOT NULL
+);
+
+-- Orders table
+CREATE TABLE IF NOT EXISTS orders (
+    id BIGSERIAL PRIMARY KEY,
+    order_number VARCHAR(50) NOT NULL UNIQUE,
+    supplier_id BIGINT REFERENCES suppliers(id),
+    status VARCHAR(50) NOT NULL,
+    total NUMERIC(12,2) NOT NULL,
+    item_count INTEGER NOT NULL,
+    expected_date DATE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Insert sample warehouse data
+INSERT INTO warehouses (code, name, location, manager, capacity)
+VALUES ('WH001', 'Main Warehouse', 'New York, NY', 'John Doe', 10000),
+       ('WH002', 'East Coast Hub', 'Boston, MA', 'Jane Smith', 5000)
+ON CONFLICT DO NOTHING;
+
+-- Insert sample order data
+INSERT INTO orders (order_number, supplier_id, status, total, item_count, expected_date, created_at)
+VALUES ('ORD-2024-001', 1, 'PENDING', 2500.00, 5, CURRENT_DATE + INTERVAL '5 days', NOW()),
+       ('ORD-2024-002', 2, 'SHIPPED', 1200.00, 3, CURRENT_DATE + INTERVAL '2 days', NOW())
+ON CONFLICT DO NOTHING;
