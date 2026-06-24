@@ -1,7 +1,7 @@
 {
   "files": [],
   "compilerOptions": {
-    "strict": true
+    "strict": true,
   },
   "references": [
     { "path": "./tsconfig.app.json" },

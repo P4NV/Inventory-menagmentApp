@@ -37,11 +37,6 @@ const CATEGORY_IDS: Record<string, string> = {
     'Furniture': '3', 'Clothing': '4', 'Tools & Hardware': '5'
 }
 
-const SUPPLIER_IDS: Record<string, string> = {
-    'TechSource Ltd': '1', 'OfficeWorld Inc': '2',
-    'FurniturePro': '3', 'ApparelHub': '4', 'ToolMaster Supply': '5'
-}
-
 function StockBadge({ qty, needsReorder }: { qty: number; needsReorder: boolean }) {
     if (qty === 0) return <span className="px-3 py-1 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-full">Out of stock</span>
     if (needsReorder) return <span className="px-3 py-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-full">Low — {qty} left</span>
@@ -59,12 +54,21 @@ function Modal({ title, onClose, onSave, form, setForm, saving }: {
     const field = (label: string, key: keyof FormData, type = 'text') => (
         <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">{label}</label>
-            <input
-                type={type}
-                value={form[key]}
-                onChange={e => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-            />
+            {type === 'textarea' ? (
+                <textarea
+                    value={form[key]}
+                    onChange={e => setForm({ ...form, [key]: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 resize-none"
+                />
+            ) : (
+                <input
+                    type={type}
+                    value={form[key]}
+                    onChange={e => setForm({ ...form, [key]: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                />
+            )}
         </div>
     )
 
@@ -150,9 +154,12 @@ export default function Products() {
                 fetch(`/api/products?search=${encodeURIComponent(search)}&category=${encodeURIComponent(categoryFilter)}`)
                     .then(r => r.json())
                     .then(d => setProducts(d))
+            } else {
+                alert(`Failed to save product (status ${res.status})`)
             }
         } catch (e) {
             console.error(e)
+            alert('Network error — could not save product')
         } finally {
             setSaving(false)
         }
@@ -192,4 +199,80 @@ export default function Products() {
                 <select
                     value={categoryFilter}
                     onChange={e => setCategoryFilter(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100
+                    className="px-4 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                >
+                    {CATEGORIES.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                </select>
+            </div>
+
+            {/* Products table */}
+            {loading ? (
+                <div className="text-center py-12 text-gray-500 dark:text-slate-400">Loading…</div>
+            ) : filteredProducts.length === 0 ? (
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-12 text-center transition-colors duration-300">
+                    <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-slate-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p className="text-gray-500 dark:text-slate-400 font-medium">No products found</p>
+                    <p className="text-sm text-gray-400 dark:text-slate-500 mt-1">Try adjusting your search or filters, or add a new product.</p>
+                </div>
+            ) : (
+                <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm transition-colors duration-300">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700 transition-colors duration-300">
+                            <thead className="bg-gray-50 dark:bg-slate-900/50">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">SKU</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Product</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Price</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Stock</th>
+                                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 dark:divide-slate-700 bg-white dark:bg-slate-800 transition-colors duration-300">
+                                {filteredProducts.map((p, i) => (
+                                    <tr
+                                        key={p.id}
+                                        className={`hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-200 ${i % 2 === 1 ? 'bg-gray-50 dark:bg-slate-900/30' : 'bg-white dark:bg-slate-800'}`}
+                                    >
+                                        <td className="px-6 py-4 font-mono text-sm font-medium text-indigo-600 dark:text-indigo-400">{p.sku}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-gray-800 dark:text-slate-200">{p.name}</div>
+                                            {p.description && <div className="text-xs text-gray-500 dark:text-slate-400 truncate max-w-xs">{p.description}</div>}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">{p.category || '—'}</td>
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-800 dark:text-slate-200">€{p.unitPrice.toFixed(2)}</td>
+                                        <td className="px-6 py-4">
+                                            <StockBadge qty={p.stockQty} needsReorder={p.needsReorder} />
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <button onClick={() => openModal(p)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200">Edit</button>
+                                                <button onClick={() => handleDelete(p.id)} className="text-sm text-red-600 dark:text-red-400 hover:underline transition-colors duration-200">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal */}
+            {modalOpen && (
+                <Modal
+                    title={editingProduct ? 'Edit Product' : 'Add Product'}
+                    onClose={() => setModalOpen(false)}
+                    onSave={handleSave}
+                    form={form}
+                    setForm={setForm}
+                    saving={saving}
+                />
+            )}
+        </div>
+    )
+}

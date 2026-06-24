@@ -2682,6 +2682,18 @@
         <option name="homepage" value="https://uiable.com" />
         <option name="urlTemplate" value="https://uiable.com/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-paceui" />
+        <option name="name" value="Paceui" />
+        <option name="namespace" value="@paceui" />
+        <option name="baseUrl" value="https://paceui.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="Carefully built UI blocks for real apps and dashboards, designed to integrate smoothly from early ideas to production releases." />
+        <option name="homepage" value="https://paceui.com" />
+        <option name="urlTemplate" value="https://paceui.com/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
