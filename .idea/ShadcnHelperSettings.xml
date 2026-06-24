@@ -2694,6 +2694,18 @@
         <option name="homepage" value="https://paceui.com" />
         <option name="urlTemplate" value="https://paceui.com/r/{name}.json" />
       </RegistryConfigState>
+      <RegistryConfigState>
+        <option name="id" value="central-hirael" />
+        <option name="name" value="Hirael" />
+        <option name="namespace" value="@hirael" />
+        <option name="baseUrl" value="https://hirael.com/r" />
+        <option name="stylePath" value="/{name}.json" />
+        <option name="type" value="community" />
+        <option name="enabled" value="false" />
+        <option name="description" value="The components shadcn/ui doesn't ship. A collection of high-utility React components built on top of shadcn/ui." />
+        <option name="homepage" value="https://hirael.com" />
+        <option name="urlTemplate" value="https://hirael.com/r/{name}.json" />
+      </RegistryConfigState>
     </registryConfigs>
   </component>
 </project>
