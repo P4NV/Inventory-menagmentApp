@@ -13,21 +13,21 @@ const ThemeContext = createContext<ThemeContextType>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [darkMode, setDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('theme');
-            if (saved) return saved === 'dark';
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) return savedTheme === 'dark';
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
         return false;
     });
 
     useEffect(() => {
+        const root = document.documentElement;
         if (darkMode) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
+            root.classList.add('dark');
         } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
+            root.classList.remove('dark');
         }
+        localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
 
     return (
@@ -38,5 +38,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTheme() {
-    return useContext(ThemeContext);
+    const context = useContext(ThemeContext);
+    if (!context) {
+        throw new Error('useTheme must be used within a ThemeProvider');
+    }
+    return context;
 }
