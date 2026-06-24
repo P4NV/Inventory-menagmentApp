@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from './components/Sidebar.tsx'
-import { ThemeProvider } from './Contexts/ThemeContext.tsx'
+import { ThemeProvider } from './contexts/ThemeContext.tsx'
 import './App.css'
 
 export default function App() {

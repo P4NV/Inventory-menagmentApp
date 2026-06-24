@@ -1,20 +1,34 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
-// 1. Define the type for context
 interface ThemeContextType {
     darkMode: boolean;
     setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// 2. Pass a default value to createContext
 const ThemeContext = createContext<ThemeContextType>({
     darkMode: false,
     setDarkMode: () => {},
 });
 
-// 3. Fix the children prop syntax
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [darkMode, setDarkMode] = useState(false);
+    const [darkMode, setDarkMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('theme');
+            if (saved) return saved === 'dark';
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        return false;
+    });
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [darkMode]);
 
     return (
         <ThemeContext.Provider value={{ darkMode, setDarkMode }}>

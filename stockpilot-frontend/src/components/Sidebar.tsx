@@ -1,6 +1,6 @@
 import {NavLink} from "react-router-dom";
 import '../App.css';
-import {useTheme} from '../Contexts/ThemeContext.tsx';
+import {useTheme} from '../contexts/ThemeContext.tsx';
 
 export default function Sidebar() {
 
@@ -15,7 +15,7 @@ export default function Sidebar() {
         { to: '/users',     label: 'Users',      icon: '👤' },
     ]
     return (
-        <aside className={`w-[220px] min-h-screen border-r border-gray-200 dark:border-slate-700 flex flex-col fixed top-0 left-0 bottom-0 z-10 ${darkMode ? 'bg-black' : 'bg-white'} dark:bg-slate-800 transition-colors duration-300`}>
+        <aside className={`w-[220px] min-h-screen border-r border-gray-200 dark:border-slate-700 flex flex-col fixed top-0 left-0 bottom-0 z-10 bg-white dark:bg-slate-800 transition-colors duration-300`}>
             {/* Logo */}
             <div className="p-5 pb-2 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex items-center gap-2.5">
@@ -53,7 +53,7 @@ export default function Sidebar() {
                 onClick={() => setDarkMode(!darkMode)}
                 className="border border-gray-200 dark:border-slate-600 p-1 px-4 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-200"
             >
-                {darkMode ? "Light" : "Dark"}
+                {darkMode ? "☀️ Light" : "🌙 Dark"}
             </button>
             {/* User */}
             <div className="px-5 py-3 border-t border-gray-200 dark:border-slate-700 flex items-center gap-2.5 transition-colors duration-300">

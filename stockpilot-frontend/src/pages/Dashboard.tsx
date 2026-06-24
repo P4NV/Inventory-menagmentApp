@@ -3,16 +3,16 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 
 const COLORS = ['#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6']
 
-function StatCard({ label, value, sub, subColor = '#6b7280', accent = '#111827' }: any) {
+function StatCard({ label, value, sub, accent = '#111827' }: any) {
     const textColor = accent === '#10b981' ? 'text-emerald-800 dark:text-emerald-400' :
                      accent === '#f59e0b' ? 'text-amber-800 dark:text-amber-400' :
                      accent === '#ef4444' ? 'text-red-800 dark:text-red-400' :
                      accent === '#6366f1' ? 'text-indigo-800 dark:text-indigo-400' : 'text-gray-800 dark:text-slate-200';
 
-    const subTextColor = subColor === '#f59e0b' ? 'text-amber-500 dark:text-amber-400' :
-                        subColor === '#ef4444' ? 'text-red-500 dark:text-red-400' :
-                        subColor === '#10b981' ? 'text-emerald-500 dark:text-emerald-400' :
-                        subColor === '#6366f1' ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-500 dark:text-slate-400';
+    const subTextColor = accent === '#f59e0b' ? 'text-amber-500 dark:text-amber-400' :
+                        accent === '#ef4444' ? 'text-red-500 dark:text-red-400' :
+                        accent === '#10b981' ? 'text-emerald-500 dark:text-emerald-400' :
+                        accent === '#6366f1' ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-500 dark:text-slate-400';
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-6 flex-1 transition-colors duration-300">
@@ -57,14 +57,12 @@ export default function Dashboard() {
                     value={stats.lowStockCount}
                     sub="Requires action"
                     accent={stats.lowStockCount > 0 ? '#f59e0b' : '#10b981'}
-                    subColor={stats.lowStockCount > 0 ? '#f59e0b' : '#10b981'}
                 />
                 <StatCard
                     label="Out of Stock"
                     value={stats.lowStockItems?.filter((i: any) => i.stockQty === 0).length || 0}
                     sub="Urgent"
                     accent="#ef4444"
-                    subColor="#ef4444"
                 />
                 <StatCard
                     label="Inventory Value"
@@ -88,11 +86,11 @@ export default function Dashboard() {
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700 text-sm transition-colors duration-300">
                             <thead className="bg-gray-50 dark:bg-slate-900/50">
                                 <tr>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{/* SKU */}</th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{/* Product */}</th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{/* On Hand */}</th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{/* Reorder At */}</th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">{/* Status */}</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">SKU</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Product</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">On Hand</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Reorder At</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-slate-700 bg-white dark:bg-slate-800 transition-colors duration-300">
@@ -104,9 +102,9 @@ export default function Dashboard() {
                                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-400">{item.reorderLevel}</td>
                                         <td className="px-6 py-4">
                                             {item.stockQty === 0 ? (
-                                                <span className="px-3 py-1 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-full">{/* Out of Stock */}</span>
+                                                <span className="px-3 py-1 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-full">Out of Stock</span>
                                             ) : (
-                                                <span className="px-3 py-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-full">{/* Low Stock */}</span>
+                                                <span className="px-3 py-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-full">Low Stock</span>
                                             )}
                                         </td>
                                     </tr>
@@ -130,7 +128,7 @@ export default function Dashboard() {
                         <BarChart data={barData} margin={{ left: -20 }}>
                             <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                             <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                            <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, backgroundColor: '#fff', color: '#0f172a' }} />
+                            <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }} />
                             <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
@@ -143,7 +141,7 @@ export default function Dashboard() {
                             <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${String(name ?? '').split(' ')[0]} ${((percent ?? 0) * 100).toFixed(0)}%`} labelLine={false}>
                                 {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                             </Pie>
-                            <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, backgroundColor: '#fff', color: '#0f172a' }} />
+                            <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 13, backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }} />
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
