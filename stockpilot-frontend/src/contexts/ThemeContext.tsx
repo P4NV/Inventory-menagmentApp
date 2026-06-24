@@ -1,38 +1,27 @@
-
 import { createContext, useContext, useState, useEffect } from "react";
 
 interface ThemeContextType {
     darkMode: boolean;
-    setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+    toggleDarkMode: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType>({
-    darkMode: false,
-    setDarkMode: () => {},
-});
+const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [darkMode, setDarkMode] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) return savedTheme === 'dark';
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-        return false;
-    });
+    const [darkMode, setDarkMode] = useState(
+        () => localStorage.getItem('theme') === 'dark'
+            || window.matchMedia('(prefers-color-scheme: dark)').matches
+    );
 
     useEffect(() => {
-        const root = document.documentElement;
-        if (darkMode) {
-            root.classList.add('dark');
-        } else {
-            root.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', darkMode);
         localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
 
+    const toggleDarkMode = () => setDarkMode(prev => !prev);
+
     return (
-        <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
+        <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
             {children}
         </ThemeContext.Provider>
     );
@@ -40,8 +29,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
     const context = useContext(ThemeContext);
-    if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider');
-    }
+    if (!context) throw new Error('useTheme must be used within a ThemeProvider');
     return context;
 }

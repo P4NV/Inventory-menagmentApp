@@ -4,7 +4,7 @@ import {useTheme} from '../contexts/ThemeContext.tsx';
 
 export default function Sidebar() {
 
-    const { darkMode, setDarkMode } = useTheme();
+    const { darkMode, toggleDarkMode } = useTheme();
 
     const NAV = [
         { to: '/',          label: 'Dashboard',  icon: '⬚' },
@@ -50,7 +50,7 @@ export default function Sidebar() {
                 ))}
             </nav>
             <button
-                onClick={() => setDarkMode(!darkMode)}
+                onClick={toggleDarkMode}
                 className="border border-gray-200 dark:border-slate-600 p-1 px-4 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-200"
             >
                 {darkMode ? "☀️ Light" : "🌙 Dark"}
