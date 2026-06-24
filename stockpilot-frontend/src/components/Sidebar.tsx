@@ -1,8 +1,10 @@
 import {NavLink} from "react-router-dom";
 import '../App.css';
+import {useTheme} from '../Contexts/ThemeContext.tsx';
 
 export default function Sidebar() {
 
+    const { darkMode, setDarkMode } = useTheme();
 
     const NAV = [
         { to: '/',          label: 'Dashboard',  icon: '⬚' },
@@ -13,7 +15,7 @@ export default function Sidebar() {
         { to: '/users',     label: 'Users',      icon: '👤' },
     ]
     return (
-        <aside className="w-[220px] min-h-screen bg-white border-r border-gray-200 flex flex-col fixed top-0 left-0 bottom-0 z-10">
+        <aside className={`w-[220px] min-h-screen border-r border-gray-200 flex flex-col fixed top-0 left-0 bottom-0 z-10 ${darkMode ? 'bg-black' : 'bg-white'}`}>
             {/* Logo */}
             <div className="p-5 pb-2 border-b border-gray-200">
                 <div className="flex items-center gap-2.5">
@@ -45,7 +47,12 @@ export default function Sidebar() {
                     </NavLink>
                 ))}
             </nav>
-
+            <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="border p-1 px-4"
+            >
+                {darkMode ? "Light" : "Dark"}
+            </button>
             {/* User */}
             <div className="px-5 py-3 border-t border-gray-200 flex items-center gap-2.5">
                 <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xs">A</div>
