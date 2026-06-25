@@ -6,3 +6,5 @@ export default function Suppliers() {
         </div>
     )
 }
+
+//add some factory's for sending requests for a shipping the products

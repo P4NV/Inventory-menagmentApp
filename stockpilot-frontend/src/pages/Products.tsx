@@ -276,3 +276,5 @@ export default function Products() {
         </div>
     )
 }
+
+//better naming and some icons needed

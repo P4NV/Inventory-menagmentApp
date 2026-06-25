@@ -6,3 +6,5 @@ export default function Warehouses() {
         </div>
     )
 }
+
+//add multiple warehouse menagment for all stock compined and seperate menagment

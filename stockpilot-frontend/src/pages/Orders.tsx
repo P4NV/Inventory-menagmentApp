@@ -75,3 +75,5 @@ export default function Orders() {
         </div>
     )
 }
+
+//editable status and functional coleration to the dashboard/inventory status and stock

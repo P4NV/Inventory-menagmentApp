@@ -38,7 +38,7 @@ export default function Sidebar() {
                         to={to}
                         end={to === '/'}
                         className={({ isActive }) => `
-                            flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+                            flex items-center gap-2.5 px-3 py-2 rounded-md text-lg font-medium transition-all duration-200
                             ${isActive 
                                 ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
                                 : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'}
@@ -66,3 +66,6 @@ export default function Sidebar() {
         </aside>
     )
 }
+
+// add some info of the stock but simple and minimal the most important bit
+//make the user section functional for login logging out and etc

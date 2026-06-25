@@ -149,3 +149,6 @@ export default function Dashboard() {
         </div>
     )
 }
+//update the charts ui/ux
+//better layout
+//better color scheme

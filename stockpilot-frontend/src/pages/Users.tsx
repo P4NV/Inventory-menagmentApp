@@ -6,3 +6,5 @@ export default function Users() {
         </div>
     )
 }
+
+//administration of employes and their acces to the inventory
